@@ -1,30 +1,27 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-# set your lab user name
-  {{ .Release.Name }}: user8-hello-world
+  name: {{ .Release.Name }}
 spec:
-  {{ .Values.ReplicaNumber }}: 2
+  replicas: {{ .Values.ReplicaNumber }}
   selector:
-    {{ .Release.Name }}:
-# set your lab user name
-      app: user8-hello-world
+    matchLabels:
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-# set your lab user name
-        {{ .Release.Name }}: user8-hello-world
+        app: {{ .Release.Name }}
     spec:
       containers:
         - resources: {}
           terminationMessagePath: /dev/termination-log
-          {{ .Release.Name }}: hello-world
+          name: {{ .Release.Name }}
           ports:
-            - {{ .Values.containers.containerPort }}: 8080
+            - containerPort: {{ .Values.containers.containerPort }}
               protocol: TCP
-          imagePullPolicy: IfNotPresent
-# update with the image you build in part 1
-          {{ .Values.containers.image }}:{{ .Values.containers.tag }}: 'quay.io/eldan_postagi/app-dev-lab:v2'
+          imagePullPolicy: Always
+          terminationMessagePolicy: File
+          image: {{ .Values.containers.image }}:{{ .Values.containers.tag }}
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
   strategy:
